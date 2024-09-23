@@ -52,7 +52,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/product/:id", getProductHandler)
-  app.Get("/products/", getProductsHandler)
+  app.Get("/product/", getProductsHandler)
 	app.Post("/product/", createProductHandler)
   app.Put("/product/:id", updateProductHandler)
   app.Delete("product/:id",deleteProductHandler)
