@@ -46,29 +46,24 @@ func init() {
 func authRequired(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
 
-	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(cookie, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
-	
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized) // ส่งสถานะ unauthorized
-	}
-	
-	// เช็ค claims ว่าถูกต้อง
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return c.SendStatus(fiber.StatusUnauthorized) // ส่งสถานะ unauthorized
+
+	if err != nil || !token.Valid {
+		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	// Print claims for debugging
-	fmt.Println("Claims:", claims)
+	claim := token.Claims.(jwt.MapClaims)
 
-	// Extract user ID from claims and set it in the context
-	if userID, exists := claims["user_id"]; exists {
-		c.Locals("userID", userID) // Store user ID for later use
+	// ตรวจสอบว่ามี user_id ใน claims หรือไม่
+	if userID, exists := claim["user_id"]; exists {
+		c.Locals("userID", userID) // บันทึก userID ลงใน context
 	} else {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized: user_id not found in claims"})
+		return c.SendStatus(fiber.StatusUnauthorized) // ส่งสถานะ Unauthorized
 	}
+
+	fmt.Println(claim)
 
 	return c.Next()
 }
@@ -148,9 +143,14 @@ func setPathApi() {
 	})
 
 	app.Get("/authen/profile", func(c *fiber.Ctx) error {
-		userID := c.Locals("userID").(int)
-        fmt.Println(userID)
-		return apiProfile.GetProfile(db, c, userID)
+
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+
+		return apiProfile.GetProfile(db, c, userid)
 	})
 
 	app.Post("/authen/createprofile", func(c *fiber.Ctx) error {
@@ -158,6 +158,19 @@ func setPathApi() {
 	})
 
 	app.Listen(":8080")
+}
+
+func getUserId(c *fiber.Ctx) (uint, error) {
+	userID := c.Locals("userID")
+	// ตรวจสอบ type ของ userID เพื่อให้แน่ใจว่าเป็น float64 (ค่าที่ JWT อาจให้มาเป็น float64)
+	userIDFloat, ok := userID.(float64)
+	if !ok {
+		return 0, c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+	}
+
+	// แปลงเป็น int
+	userIDInt := uint(userIDFloat)
+	return userIDInt, nil
 }
 
 func main() {

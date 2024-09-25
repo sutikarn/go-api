@@ -1,16 +1,13 @@
 package apiProfile
 
 import (
-	"fmt"
 	model "nack/models"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
-func GetProfile(db *gorm.DB, c *fiber.Ctx, UserID int) error {
-	cookie := c.Cookies("cookie_name")
-   fmt.Printf("cookie: %s\n", cookie)
+func GetProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
 	var profile model.Profile
 	result := db.Preload("User").Where("user_id = ?", UserID).First(&profile)
 	if result.Error != nil {
