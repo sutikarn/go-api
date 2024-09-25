@@ -11,7 +11,7 @@ func GetProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
 	var profile model.Profile
 	result := db.Preload("User").Where("user_id = ?", UserID).First(&profile)
 	if result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Not Get Banner"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Not Get Profile"})
 	}
 	return c.JSON(profile)
 }
