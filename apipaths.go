@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	apicart "nack/api/cartapi"
 	apihome "nack/api/homeapi"
 	apiProfile "nack/api/profileapi"
 	apimeow "nack/api/signin_signup"
@@ -10,7 +11,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
-
 
 func authRequired(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
@@ -37,7 +37,7 @@ func authRequired(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func setPathApi (){
+func setPathApi() {
 	app := fiber.New()
 
 	///set path/authen check auth
@@ -67,7 +67,6 @@ func setPathApi (){
 	app.Get("/shoppingmall", func(c *fiber.Ctx) error {
 		return apihome.GetShoppingMall(db, c)
 	})
-	
 
 	app.Get("/product", func(c *fiber.Ctx) error {
 		return apihome.GetProduct(db, c)
@@ -88,7 +87,7 @@ func setPathApi (){
 	app.Get("/productRecommend", func(c *fiber.Ctx) error {
 		return apihome.GetProductRecommend(db, c)
 	})
-	
+
 	///goauthen
 
 	app.Get("/authen/profile", func(c *fiber.Ctx) error {
@@ -118,6 +117,24 @@ func setPathApi (){
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
 		}
 		return apiProfile.UpdateProfile(db, c, userid)
+	})
+
+	app.Post("/authen/addtocart", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apicart.AddToCart(db, c, userid)
+	})
+
+	app.Get("/authen/getcart", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apicart.GetCart(db, c, userid)
 	})
 
 	app.Listen(":8080")
