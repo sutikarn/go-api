@@ -1,6 +1,7 @@
 package apiProfile
 
 import (
+	"fmt"
 	model "nack/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,5 +27,26 @@ func CreateProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
 	if result := db.Create(profile); result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not create Profile"})
 	}
+
+	return c.JSON(profile)
+}
+
+func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
+
+	profile := new(model.Profile)
+
+	db.Where("user_id = ?", userID).First(&profile)
+	if err := c.BodyParser(profile); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request payload"})
+	}
+
+	fmt.Println(profile.Mobile)
+	// อัปเดตโปรไฟล์
+	profile.UserID = userID
+	if result := db.Save(&profile); result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update profile"})
+	}
+
+    db.Save(&profile)
 	return c.JSON(profile)
 }

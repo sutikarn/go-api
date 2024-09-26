@@ -74,7 +74,21 @@ func setPathApi (){
 	})
 
 	app.Post("/authen/createprofile", func(c *fiber.Ctx) error {
-		return apiProfile.CreateProfile(db, c, 21)
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiProfile.CreateProfile(db, c, userid)
+	})
+
+	app.Patch("/authen/updateprofile", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiProfile.UpdateProfile(db, c, userid)
 	})
 
 	app.Listen(":8080")
