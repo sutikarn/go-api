@@ -20,7 +20,7 @@ type Profile struct {
 	Status    string `gorm:"type:varchar(10)" json:"status"`
 	Image     string `gorm:"type:text" json:"image"`
 	UserID    uint   `gorm:"not null" json:"userid"` // FK referencing User.ID
-	User      User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	User      User   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Address struct {
