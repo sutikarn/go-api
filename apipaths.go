@@ -56,11 +56,27 @@ func setPathApi (){
 		return apihome.GetHome(db, c)
 	})
 
-	///goauthen
-
-	app.Get("/authen/banner", func(c *fiber.Ctx) error {
+	app.Get("/banner", func(c *fiber.Ctx) error {
 		return apihome.GetBanner(db, c)
 	})
+
+	app.Get("/category", func(c *fiber.Ctx) error {
+		return apihome.GetCategory(db, c)
+	})
+
+	app.Get("/category/:id", func(c *fiber.Ctx) error {
+		return apihome.GetCategoryById(db, c)
+	})
+
+	app.Get("/shoppingmall", func(c *fiber.Ctx) error {
+		return apihome.GetShoppingMall(db, c)
+	})
+
+	app.Get("/product", func(c *fiber.Ctx) error {
+		return apihome.GetProduct(db, c)
+	})
+
+	///goauthen
 
 	app.Get("/authen/profile", func(c *fiber.Ctx) error {
 
