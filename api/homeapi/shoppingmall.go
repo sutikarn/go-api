@@ -19,11 +19,15 @@ func GetShoppingMall(db *gorm.DB, c *fiber.Ctx) error {
 
 
 func GetShoppingMallById(db *gorm.DB, c *fiber.Ctx) error {
-	var mall []model.Mall
 
-	if result := db.Find(&mall); result.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Not Get Banner"})
-	}
+	id := c.Params("id")
 
-	return c.JSON(mall)
+	var products []Product
+	
+    // ค้นหาผลิตภัณฑ์ทั้งหมดที่มี mall_ID ตรงกับที่ระบุ
+    if result := db.Where("mall_id = ?", id).Find(&products); result.Error != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "No products found for this category"})
+    }
+
+    return c.JSON(products)
 }
