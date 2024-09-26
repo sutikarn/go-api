@@ -76,6 +76,10 @@ func setPathApi (){
 		return apihome.GetProduct(db, c)
 	})
 
+	app.Get("/product/:id", func(c *fiber.Ctx) error {
+		return apihome.GetProductById(db, c)
+	})
+
 	///goauthen
 
 	app.Get("/authen/profile", func(c *fiber.Ctx) error {

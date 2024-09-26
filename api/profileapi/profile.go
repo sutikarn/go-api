@@ -2,7 +2,7 @@ package apiProfile
 
 import (
 	"fmt"
-	model "nack/models"
+	// model "nack/models"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -43,7 +43,7 @@ func CreateProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
 
 func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
-	profile := new(model.Profile)
+	profile := new(Profile)
 
 	//check profile userid 
 	db.Where("user_id = ?", userID).First(&profile)
@@ -57,7 +57,6 @@ func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request payload"})
 	}
 
-	fmt.Println(profile.Mobile)
 	// updateprofile
 	profile.UserID = userID
 	if result := db.Save(&profile); result.Error != nil {
