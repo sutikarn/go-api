@@ -84,6 +84,10 @@ func setPathApi (){
 	app.Get("/shoppingmall/:id", func(c *fiber.Ctx) error {
 		return apihome.GetShoppingMallById(db, c)
 	})
+
+	app.Get("/productRecommend", func(c *fiber.Ctx) error {
+		return apihome.GetProductRecommend(db, c)
+	})
 	
 	///goauthen
 
