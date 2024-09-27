@@ -22,13 +22,18 @@ type Profile struct {
 func GetProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 	var profile Profile
 	if err := db.First(&profile, "user_id = ?", userID).Error; err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not found"})
-    }
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not found"})
+	}
 	return c.JSON(profile)
 }
 
 func CreateProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
 	profile := new(Profile)
+
+	if err := db.First(&profile, "user_id = ?", UserID).Error; err == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not create"})
+	}
+
 	if err := c.BodyParser(profile); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request payload"})
 	}
@@ -45,12 +50,11 @@ func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
 	profile := new(Profile)
 
-	//check profile userid 
+	//check profile userid
 	db.Where("user_id = ?", userID).First(&profile)
 	if err := db.Select("id, created_at, updated_at, deleted_at, first_name, last_name, mobile, sex, status, image, user_id").First(&profile, "user_id = ?", userID).Error; err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not found"})
-    }
-
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not found"})
+	}
 
 	// check request
 	if err := c.BodyParser(profile); err != nil {
@@ -65,6 +69,6 @@ func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
 	fmt.Println(profile)
 
-    db.Save(&profile)
+	db.Save(&profile)
 	return c.JSON(profile)
 }
