@@ -69,6 +69,6 @@ func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
 	fmt.Println(profile)
 
-	db.Save(&profile)
+	// db.Save(&profile)
 	return c.JSON(profile)
 }

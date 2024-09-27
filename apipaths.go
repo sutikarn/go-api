@@ -184,6 +184,24 @@ func setPathApi() {
 		return apiuser.CreateAddress(db, c, userid)
 	})
 
+	app.Patch("/authen/address", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiuser.UpdateAddress(db, c, userid)
+	})
+
+	app.Delete("/authen/address/:id", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiuser.DeleteAddress(db, c, userid)
+	})
+
 
 
 	app.Listen(":8080")

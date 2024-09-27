@@ -17,7 +17,7 @@ func GetAddress(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
 	return c.JSON(fiber.Map{
 		"message": "Get Address Success",
-		"data":addressResponse,
+		"data":    addressResponse,
 	})
 }
 
@@ -42,14 +42,52 @@ func CreateAddress(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
 func UpdateAddress(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
+	address := new(model.Address)
+
+	//check profile userid
+	db.Where("user_id = ?", userID).First(&address)
+	if err := db.Where("user_id = ?", userID).First(&address).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not found"})
+	}
+
+	// check request
+	if err := c.BodyParser(address); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request payload"})
+	}
+
+	// updateprofile
+	address.UserID = userID
+	if result := db.Save(&address); result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update profile"})
+	}
+
+	// db.Save(&address)
+
 	return c.JSON(fiber.Map{
-		"message": "Added Products to cart Success",
+		"message": "Update Address Success",
 	})
 }
 
-func DeleteAddress(db *gorm.DB, c *fiber.Ctx, userID uint) error {
+func DeleteAddress(db *gorm.DB, c *fiber.Ctx, userId uint) error {
+
+	var address model.Address
+	id := c.Params("id")
+
+	if result := db.Where("id = ?", id).Find(&address); result.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "user is not match"})
+	}
+
+	if address.UserID != userId {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request payload",
+		})
+	}
+
+	if result := db.Delete(&address); result.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Not Delete Address"})
+	}
 
 	return c.JSON(fiber.Map{
-		"message": "Added Products to cart Success",
+		"message": "Delete Address Success",
 	})
 }
