@@ -7,6 +7,7 @@ import (
 	apihome "nack/api/homeapi"
 	apiProfile "nack/api/profileapi"
 	apimeow "nack/api/signin_signup"
+	apiuser "nack/api/userapi"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -164,6 +165,26 @@ func setPathApi() {
 		}
 		return apifav.DeleteFavorite(db, c, userid)
 	})
+
+	app.Get("/authen/address", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiuser.GetAddress(db, c, userid)
+	})
+
+	app.Post("/authen/address", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiuser.CreateAddress(db, c, userid)
+	})
+
+
 
 	app.Listen(":8080")
 }
