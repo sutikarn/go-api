@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	apicart "nack/api/cartapi"
+	apifav "nack/api/favapi"
 	apihome "nack/api/homeapi"
 	apiProfile "nack/api/profileapi"
 	apimeow "nack/api/signin_signup"
@@ -135,6 +136,33 @@ func setPathApi() {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
 		}
 		return apicart.GetCart(db, c, userid)
+	})
+
+	app.Get("/authen/favorite", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apifav.GetFavorite(db, c, userid)
+	})
+
+	app.Post("/authen/favorite", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apifav.AddFavorite(db, c, userid)
+	})
+
+	app.Delete("/authen/favorite/:id", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apifav.DeleteFavorite(db, c, userid)
 	})
 
 	app.Listen(":8080")
