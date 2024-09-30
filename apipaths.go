@@ -58,7 +58,7 @@ func setPathApi() {
 		return apihome.GetHome(db, c)
 	})
 
-	app.Get("/banner", func(c *fiber.Ctx) error {
+	app.Use("/banner", authRequired,func(c *fiber.Ctx) error {
 		return apihome.GetBanner(db, c)
 	})
 
@@ -200,6 +200,24 @@ func setPathApi() {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
 		}
 		return apiuser.DeleteAddress(db, c, userid)
+	})
+
+	app.Post("/authen/createorder", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiuser.CreateOrder(db, c, userid)
+	})
+
+	app.Get("/authen/getorder", func(c *fiber.Ctx) error {
+		userid, err := getUserId(c)
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user ID"})
+		}
+		return apiuser.GetOrder(db, c, userid)
 	})
 
 

@@ -47,5 +47,5 @@ func Signin(db *gorm.DB, c *fiber.Ctx) error {
 		HTTPOnly: true,
 	})
 
-	return c.JSON(fiber.Map{"message": "success","token": token})
+	return c.JSON(fiber.Map{"message": "Login success","token": t})
 }
