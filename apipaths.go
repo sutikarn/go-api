@@ -46,11 +46,11 @@ func setPathApi() {
 	app.Use("/authen", authRequired)
 
 	///noauthen
-	app.Post("/sign-up", func(c *fiber.Ctx) error {
+	app.Post("/api/v1/sign-up", func(c *fiber.Ctx) error {
 		return apimeow.Signup(db, c)
 	})
 
-	app.Post("/sign-in", func(c *fiber.Ctx) error {
+	app.Post("/api/v1/sign-in", func(c *fiber.Ctx) error {
 		return apimeow.Signin(db, c)
 	})
 
@@ -58,41 +58,11 @@ func setPathApi() {
 		return apihome.GetHome(db, c)
 	})
 
-	app.Use("/banner", authRequired,func(c *fiber.Ctx) error {
-		return apihome.GetBanner(db, c)
-	})
-
-	app.Get("/category", func(c *fiber.Ctx) error {
-		return apihome.GetCategory(db, c)
-	})
-
-	app.Get("/shoppingmall", func(c *fiber.Ctx) error {
-		return apihome.GetShoppingMall(db, c)
-	})
-
-	app.Get("/product", func(c *fiber.Ctx) error {
-		return apihome.GetProduct(db, c)
-	})
-
-	app.Get("/product/:id", func(c *fiber.Ctx) error {
-		return apihome.GetProductById(db, c)
-	})
-
-	app.Get("/category/:id", func(c *fiber.Ctx) error {
-		return apihome.GetCategoryById(db, c)
-	})
-
-	app.Get("/shoppingmall/:id", func(c *fiber.Ctx) error {
-		return apihome.GetShoppingMallById(db, c)
-	})
-
-	app.Get("/productRecommend", func(c *fiber.Ctx) error {
-		return apihome.GetProductRecommend(db, c)
-	})
-
 	///goauthen
 
-	app.Get("/authen/profile", func(c *fiber.Ctx) error {
+	app.Use("/api/v1/profile", authRequired)
+
+	app.Get("/api/v1/profile", func(c *fiber.Ctx) error {
 
 		userid, err := getUserId(c)
 
@@ -103,7 +73,7 @@ func setPathApi() {
 		return apiProfile.GetProfile(db, c, userid)
 	})
 
-	app.Post("/authen/createprofile", func(c *fiber.Ctx) error {
+	app.Post("/api/v1/profile", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -111,8 +81,7 @@ func setPathApi() {
 		}
 		return apiProfile.CreateProfile(db, c, userid)
 	})
-
-	app.Patch("/authen/updateprofile", func(c *fiber.Ctx) error {
+	app.Patch("/api/v1/profile", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -121,7 +90,9 @@ func setPathApi() {
 		return apiProfile.UpdateProfile(db, c, userid)
 	})
 
-	app.Post("/authen/addtocart", func(c *fiber.Ctx) error {
+	app.Use("/api/v1/product/cart", authRequired)
+
+	app.Post("/api/v1/product/cart", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -130,7 +101,7 @@ func setPathApi() {
 		return apicart.AddToCart(db, c, userid)
 	})
 
-	app.Get("/authen/getcart", func(c *fiber.Ctx) error {
+	app.Get("/api/v1/product/cart", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -139,7 +110,9 @@ func setPathApi() {
 		return apicart.GetCart(db, c, userid)
 	})
 
-	app.Get("/authen/favorite", func(c *fiber.Ctx) error {
+	app.Use("/api/v1/product/favorite", authRequired)
+
+	app.Get("/api/v1/product/favorite", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -148,7 +121,7 @@ func setPathApi() {
 		return apifav.GetFavorite(db, c, userid)
 	})
 
-	app.Post("/authen/favorite", func(c *fiber.Ctx) error {
+	app.Post("/api/v1/product/favorite", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -157,7 +130,7 @@ func setPathApi() {
 		return apifav.AddFavorite(db, c, userid)
 	})
 
-	app.Delete("/authen/favorite/:id", func(c *fiber.Ctx) error {
+	app.Delete("/api/v1/product/favorite/:id", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -166,7 +139,9 @@ func setPathApi() {
 		return apifav.DeleteFavorite(db, c, userid)
 	})
 
-	app.Get("/authen/address", func(c *fiber.Ctx) error {
+	app.Use("/api/v1/address", authRequired)
+
+	app.Get("/api/v1/address", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -175,7 +150,7 @@ func setPathApi() {
 		return apiuser.GetAddress(db, c, userid)
 	})
 
-	app.Post("/authen/address", func(c *fiber.Ctx) error {
+	app.Post("/api/v1/address", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -184,7 +159,7 @@ func setPathApi() {
 		return apiuser.CreateAddress(db, c, userid)
 	})
 
-	app.Patch("/authen/address", func(c *fiber.Ctx) error {
+	app.Patch("/api/v1/address", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -193,7 +168,7 @@ func setPathApi() {
 		return apiuser.UpdateAddress(db, c, userid)
 	})
 
-	app.Delete("/authen/address/:id", func(c *fiber.Ctx) error {
+	app.Delete("/api/v1/address/:id", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -202,7 +177,9 @@ func setPathApi() {
 		return apiuser.DeleteAddress(db, c, userid)
 	})
 
-	app.Post("/authen/createorder", func(c *fiber.Ctx) error {
+	app.Use("/api/v1/order", authRequired)
+
+	app.Post("/api/v1/order", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -211,7 +188,7 @@ func setPathApi() {
 		return apiuser.CreateOrder(db, c, userid)
 	})
 
-	app.Get("/authen/getorder", func(c *fiber.Ctx) error {
+	app.Get("/api/v1/order", func(c *fiber.Ctx) error {
 		userid, err := getUserId(c)
 
 		if err != nil {
@@ -220,7 +197,37 @@ func setPathApi() {
 		return apiuser.GetOrder(db, c, userid)
 	})
 
+	app.Get("/api/v1/product/banner", func(c *fiber.Ctx) error {
+		return apihome.GetBanner(db, c)
+	})
 
+	app.Get("/api/v1/product/category", func(c *fiber.Ctx) error {
+		return apihome.GetCategory(db, c)
+	})
+
+	app.Get("/api/v1/product/shoppingmall", func(c *fiber.Ctx) error {
+		return apihome.GetShoppingMall(db, c)
+	})
+
+	app.Get("/api/v1/product", func(c *fiber.Ctx) error {
+		return apihome.GetProduct(db, c)
+	})
+
+	app.Get("/api/v1/product/:id", func(c *fiber.Ctx) error {
+		return apihome.GetProductById(db, c)
+	})
+
+	app.Get("/api/v1/product/category/:id", func(c *fiber.Ctx) error {
+		return apihome.GetCategoryById(db, c)
+	})
+
+	app.Get("/api/v1/product/shoppingmall/:id", func(c *fiber.Ctx) error {
+		return apihome.GetShoppingMallById(db, c)
+	})
+
+	app.Get("/api/v1/products/recommend", func(c *fiber.Ctx) error {
+		return apihome.GetProductRecommend(db, c)
+	})
 
 	app.Listen(":8080")
 }
