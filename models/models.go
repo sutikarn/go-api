@@ -16,8 +16,8 @@ type Profile struct {
 	FirstName string `gorm:"type:varchar(255);not null" json:"firstname"`
 	LastName  string `gorm:"type:varchar(255);not null" json:"lastname"`
 	Mobile    string `gorm:"type:varchar(10)" json:"mobile"`
-	Sex       string `gorm:"type:varchar(10)" json:"sex"`
-	Status    string `gorm:"type:varchar(10)" json:"status"`
+	Sex       string `gorm:"type:varchar(10); default:m" json:"sex"`
+	Status    string `gorm:"type:varchar(10); default:a" json:"status" `
 	Image     string `gorm:"type:text" json:"image"`
 	UserID    uint   `gorm:"not null" json:"userid"` // FK referencing User.ID
 	User      User   `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
@@ -29,7 +29,7 @@ type Address struct {
 	LastName  string `gorm:"type:varchar(255);not null" json:"lastname"`
 	Mobile    string `gorm:"type:varchar(10)" json:"mobile"`
 	Address   string `gorm:"type:varchar(1024)" json:"address"`
-	Type      string `gorm:"type:text" json:"type"`
+	Type      string `gorm:"type:text; default:1" json:"type"`
 	UserID    uint   `gorm:"not null" json:"userid"` // FK referencing User.ID
 	User      User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

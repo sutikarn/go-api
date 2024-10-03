@@ -13,7 +13,7 @@ type Profile struct {
 	FirstName string `gorm:"type:varchar(255);not null" json:"firstname"`
 	LastName  string `gorm:"type:varchar(255);not null" json:"lastname"`
 	Mobile    string `gorm:"type:varchar(10)" json:"mobile"`
-	Sex       string `gorm:"type:varchar(10)" json:"sex"`
+	Sex       string `gorm:"type:varchar(10); default:m" json:"sex" `
 	Status    string `gorm:"type:varchar(10)" json:"status"`
 	Image     string `gorm:"type:text" json:"image"`
 	UserID    uint   `gorm:"not null" json:"userid"` // FK referencing User.ID
@@ -24,7 +24,10 @@ func GetProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 	if err := db.First(&profile, "user_id = ?", userID).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Profile not found"})
 	}
-	return c.JSON(profile)
+	return c.JSON(fiber.Map{
+		"message": "Get Profile Success",
+		"data": profile,
+	})
 }
 
 func CreateProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
@@ -43,7 +46,9 @@ func CreateProfile(db *gorm.DB, c *fiber.Ctx, UserID uint) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not create Profile"})
 	}
 
-	return c.JSON(profile)
+	return c.JSON(fiber.Map{
+		"message": "Create Profile Success",
+	})
 }
 
 func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
@@ -70,5 +75,8 @@ func UpdateProfile(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 	fmt.Println(profile)
 
 	// db.Save(&profile)
-	return c.JSON(profile)
+	return c.JSON(fiber.Map{
+		"message": "Update Profile Success",
+		"data": profile,
+	})
 }

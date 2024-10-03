@@ -41,7 +41,6 @@ func CreateOrder(db *gorm.DB, c *fiber.Ctx, userID uint) error {
 
 	return c.JSON(fiber.Map{
 		"message": "Create Order Success",
-		"data":    orderRequest,
 	})
 }
 
